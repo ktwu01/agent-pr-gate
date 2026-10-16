@@ -9,22 +9,34 @@
 AI agent 写 PR 之前，得先停下来，问清楚用户到底想做成什么。
 **agent 不能代答。人不回答，它就得等。**
 
-谁让 agent 生成工作，谁先回答问题。把下面这句话发给你的 agent 就能开始。
+谁让 agent 生成工作，谁先回答问题。使用下面的命令，将规则接入你的仓库。
 
 [English](README.md)
 
-## 30 秒接入
+## 接入你的仓库
 
-把下面这句话发给你的 Agent：
+克隆这个仓库，然后使用 Node.js 20 或更新版本运行安装器：
 
-```text
-帮我把 https://github.com/ktwu01/agent-pr-gate/blob/main/CONTRIBUTING.md 复制到我们的 CONTRIBUTING.md 中。
+```sh
+git clone https://github.com/ktwu01/agent-pr-gate.git
+node agent-pr-gate/scripts/install.mjs --target /path/to/your/repo --agents claude,codex,pi
 ```
 
-不用安装机器人，不用装依赖。[这个仓库也在用。](CONTRIBUTING.md)
+可以选择一个 agent，也可以用逗号分隔多个。安装器保留已有贡献规则和 agent 配置。重复运行不会重复追加规则。
 
-复制的内容包含四问规则，以及哪些 PR 不收。我们的[完整贡献指南](CONTRIBUTING.md#what-we-dont-merge)
-参考了 [benchmark-radar 的贡献规则](https://github.com/ktwu01/benchmark-radar/blob/main/CONTRIBUTING.md)，列出了具体情形。
+安装的规则允许只读探索，不立即提出四问。准备修改文件或起草 PR 时，agent 才询问尚未回答的问题并等待人回答。同一次贡献复用已有答案。
+
+安装后，在目标仓库中重启 agent。Claude Code 从 `CLAUDE.md` 加载完整规则，Codex 和 Pi 从 `AGENTS.md` 加载。三者都使用原生项目指令发现机制。安装器不安装 hook 或扩展，也不修改 agent 设置。
+
+Agent 配置可能禁用或覆盖项目指令。Codex 的加载受项目指令大小限制和覆盖规则影响。Pi 的 `--no-context-files` 会禁用指令加载。安装器不拦截工具，也不强制审批 PR。
+
+接入方式依据 [Claude Code 项目指令文档](https://code.claude.com/docs/en/memory)、[Codex 项目指令指南](https://developers.openai.com/codex/guides/agents-md)和 [Pi 配置文档](https://github.com/earendil-works/pi/blob/v1.2.0/packages/coding-agent/docs/configuration.md)。
+
+已安装的规则被修改或标记格式有误时，安装器会在写入前停止。选择 Codex 时，根目录存在 `AGENTS.override.md`，或 `AGENTS.md` 超过默认的 32 KiB 限制，也会停止。请检查冲突，不要直接覆盖。将安装生成的文件提交到目标仓库，让其他人克隆时也能收到规则。
+
+手动接入时，将[通用四问模板](templates/gate.md)追加到 `CONTRIBUTING.md` 和 agent 的项目指令文件中。保留已有规则。[这个仓库也在用。](CONTRIBUTING.md)
+
+运行 `node --test tests/install.test.mjs` 检查安装器。
 
 ## 为什么做这个？
 

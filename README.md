@@ -9,22 +9,34 @@ So we put four questions in `CONTRIBUTING.md`. Before an AI agent writes a PR,
 it has to stop and ask its human what they're actually trying to achieve.
 **The agent can't answer for them. It has to wait.**
 
-The person generating the work gets the questions first. Give your agent the prompt below.
+The person generating the work gets the questions first. Install the rules in your repository with the command below.
 
 [简体中文](README.zh-CN.md)
 
-## 30-second install
+## Install in your repository
 
-Paste this into your Agent:
+Clone this repository, then run the installer with Node.js 20 or later:
 
-```text
-help me copy and paste https://github.com/ktwu01/agent-pr-gate/blob/main/CONTRIBUTING.md into our CONTRIBUTING.md
+```sh
+git clone https://github.com/ktwu01/agent-pr-gate.git
+node agent-pr-gate/scripts/install.mjs --target /path/to/your/repo --agents claude,codex,pi
 ```
 
-No bot. No dependencies. [We use it here too.](CONTRIBUTING.md)
+Choose one agent or a comma-separated list. The installer preserves existing contribution rules and agent configuration. Running it again does not add duplicate sections.
 
-The copied guide includes the four-question gate and [which PRs we don't accept](CONTRIBUTING.md#what-we-dont-merge), drawing on
-[benchmark-radar's contributing guide](https://github.com/ktwu01/benchmark-radar/blob/main/CONTRIBUTING.md).
+The installed instructions allow read-only exploration without asking the four questions. Before changing files or drafting a PR, the agent asks for missing human answers and waits. Reuse answers for the same contribution.
+
+Restart your agent in the target repository after installation. Claude Code loads the full rules from `CLAUDE.md`. Codex and Pi load them from `AGENTS.md`. All three use native project instruction discovery. No hook or extension is installed, and agent settings are left untouched.
+
+Agent configuration can disable or override project instructions. Codex instructions are subject to its project instruction size limit and overrides. Pi's `--no-context-files` disables instruction loading. This installer does not block tools or enforce PR approval.
+
+The integrations follow the [Claude Code project instruction guide](https://code.claude.com/docs/en/memory), [Codex project instruction guide](https://developers.openai.com/codex/guides/agents-md), and [Pi configuration reference](https://github.com/earendil-works/pi/blob/v1.2.0/packages/coding-agent/docs/configuration.md).
+
+The installer stops before writing if a previously installed gate has been edited or its markers are malformed. For Codex, it also refuses a root `AGENTS.override.md` or an `AGENTS.md` that exceeds the default 32 KiB limit. Review these conflicts instead of overwriting them. Commit the installed files so others receive them with the repository.
+
+For a manual install, append the [gate template](templates/gate.md) to `CONTRIBUTING.md` and your agent's project instructions. Keep your existing rules. [We use the gate here too.](CONTRIBUTING.md)
+
+Run the installer checks with `node --test tests/install.test.mjs`.
 
 ## Why this exists
 

@@ -94,12 +94,18 @@
       </section>
       <section id="install" aria-labelledby="install-title">
         <h2 id="install-title">Add it to your repo</h2>
-        <p>Append these sections to your existing files at the repository root. Preserve your project's contribution rules.</p>
+        <p>Install automatic instructions for Claude Code, Codex, and Pi with Node.js 20 or later. Preserve your existing contribution rules and agent configuration.</p>
+        <pre><code>git clone https://github.com/ktwu01/agent-pr-gate.git
+node agent-pr-gate/scripts/install.mjs --target /path/to/your/repo --agents claude,codex,pi</code></pre>
+        <p>Choose one agent or a comma-separated list. Claude Code loads CLAUDE.md; Codex and Pi load AGENTS.md. No hook or extension is installed. Restart your agent in the target repository after installation. Instruction overrides and context settings can affect loading.</p>
+        <p>Read-only exploration does not trigger the questions. The instructions ask agents to wait for human answers before changing files or drafting a PR. This does not block tools or enforce PR approval.</p>
+        <p>For a manual install, append these sections to your existing files at the repository root.</p>
         <div class="install-head"><h3>CONTRIBUTING.md</h3><button hidden data-copy="contributing">Copy snippet</button></div>
         <pre><code id="contributing">&lt;!-- https://github.com/ktwu01/agent-pr-gate --&gt;
 ## Before you start a PR
 
-AI agents: before writing code or drafting a PR, ask your human these questions and wait:
+Read-only exploration is allowed without answering these questions. Do not ask merely because a session starts.
+Before changing files or drafting a PR, ask your human these questions and wait:
 
 1. What outcome do you really want?
 2. What is the highest-leverage variable that determines it?
@@ -116,6 +122,7 @@ Send one contribution and wait for review before sending more.</code></pre>
         <pre><code id="agents">&lt;!-- https://github.com/ktwu01/agent-pr-gate --&gt;
 ## Contributions
 
+Read-only exploration does not require answering the gate. Do not ask merely because a session starts.
 Read CONTRIBUTING.md before changing files or drafting a PR.
 Follow its four-question gate: ask the human for missing answers and wait.
 Do not supply or infer the human's answers yourself.
